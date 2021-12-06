@@ -1,5 +1,5 @@
 {
-  "name": "AdventOfCode_Solidity",
+  "name": "VCounty",
   "version": "1.0.0",
   "description": "- Download visual studio code - Download a solidity plugin and install the compiler - run npm install",
   "main": "index.js",
@@ -26,7 +26,7 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/brutalkeso/AdventOfCode-Solidity-2021/issues"
+    "url": "https://github.com/brutalkeso/VCounty/issues"
   },
-  "homepage": "https://github.com/brutalkeso/AdventOfCode-Solidity-2021"
+  "homepage": "https://github.com/brutalkeso/VCounty"
 }
