@@ -6,9 +6,6 @@ JSON=require('JSON')
 import { readHexFromConsole, readLineFromConsole, Account } from "./Shared"
 import { promises } from 'fs'
 
-//const web3Instance=new Web3(new Web3.providers.HttpProvider("http://localhost:7545"))
-//const web3Instance=new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/ADD_YOUR_TOKEN"))
-
 //////////////////////////////// WEB3 ///////////////////////////////////////////////
 
 function makeContract(web3Instance: Web3, contractAddress: string): Promise<Contract> {

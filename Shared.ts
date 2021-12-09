@@ -1,4 +1,3 @@
-import { promises } from 'fs'
 import * as readline from 'readline'
 
 class Account {
