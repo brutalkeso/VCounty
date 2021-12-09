@@ -9,6 +9,7 @@ contract('VCounty', (accounts) => {
     beforeEach(async () => {
         vCounty = await VCounty.new(badges, { from: accounts[0] })
     })
+
     it("should succeed at employing new sheriff", async () => {
         await truffleAssert.passes(vCounty.employ("", accounts[1], { from: accounts[0] }))
     })
@@ -57,6 +58,14 @@ contract('VCounty', (accounts) => {
             await vCounty.mintBadgeFor(accounts[1], { gasPrice: 0, from: accounts[0] });
         }
         await truffleAssert.fails(vCounty.mintBadgeFor(accounts[1], { from: accounts[0] }), "Out of badges, new sheriffs can only trade for them");
+    })
+
+    it("should throw error attempting to make sheriff address sheriff again", async () => {
+        await vCounty.employ("1", accounts[1], { from: accounts[0] });
+        await truffleAssert.fails(
+            vCounty.employ("2", accounts[1], { from: accounts[0] }),
+            "wallet is already sheriff"
+        );
     })
 
     it("should return empty badges array for non sheriff", async () => {
@@ -210,4 +219,5 @@ contract('VCounty', (accounts) => {
         const ids = await vCounty.badgeIdsOf(accounts[2]);
         assert(ids.length == 1);
     })
+
 })

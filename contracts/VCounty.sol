@@ -36,6 +36,10 @@ contract VCounty {
                 boss.wallet == msg.sender,
             "Only a sheriff or the boss can employ new sheriffs"
         );
+        require(
+            sheriffs[wallet].wallet == address(0),
+            "Wallet is already sheriff"
+        );
         Sheriff memory sheriff = Sheriff(wallet, name);
         sheriffs[sheriff.wallet] = sheriff;
     }
