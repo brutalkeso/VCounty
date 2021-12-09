@@ -3,7 +3,7 @@ import { Contract } from "web3-eth-contract";
 import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
-import { readStringFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
 import { promises } from 'fs'
 
 //const web3Instance=new Web3(new Web3.providers.HttpProvider("http://localhost:7545"))
@@ -25,11 +25,57 @@ function makeContract(web3Instance: Web3, contractAddress: string): Promise<Cont
 
 //////////////////////////////// MAIN ///////////////////////////////////////////////
 
+class FunctionCall {
+    function: Function
+    address: string
+
+    constructor(fIn: Function, aIn: string) {
+        this.function=fIn
+        this.address=aIn
+    }
+}
+
+function readFunctionFromConsole(readlineInterface: readline.Interface): Promise<Function> {
+    console.log("Choose function to run")
+    for (const [key, value] of Object.entries(Function)) {
+        if (isNaN(Number(key))) { continue }
+        console.log(key+' '+value)
+    }
+    console.log('')
+    return new Promise<Function>((resolve, reject) => {
+        readlineInterface.question("Index: ", (inputValue) => {
+            const index=parseInt(inputValue)
+            if (isNaN(index)) {
+                reject('input was not an index')
+            } else if (!Object.values(Function).includes(index)) {
+                reject('not a valid index')
+            } else {
+                resolve(index)
+            }
+        })
+    })
+}
+
+function readFunctionCallFromConsole(readlineInterface: readline.Interface): Promise<FunctionCall> {
+    return readFunctionFromConsole(readlineInterface).then((func) => {
+        return readHexFromConsole('For address', 2, readlineInterface).then((addr) => {
+            return new FunctionCall(func, addr)
+        })
+    })
+}
+
+//////////////////////////////// MAIN ///////////////////////////////////////////////
+
+enum Function {
+    FetchBadges,
+    Mint
+}
+
 function main() {
-    const rinkebyDeployedAddress='0xa47C95403C93937B32286a52AEBF803C3E659DA7';
+    const rinkebyDeployedAddress='0x92c659C770B816De78722519Bd1D254d28Ca4128';
     const readlineInterface=readline.createInterface({ input, output })
-    readStringFromConsole("Wallet address", 42, readlineInterface).then((address) => {
-        return readStringFromConsole("Wallet key", 62, readlineInterface).then((key) => {
+    readHexFromConsole("Wallet address", 42, readlineInterface).then((address) => {
+        return readHexFromConsole("Wallet key", 62, readlineInterface).then((key) => {
             return new Account(address, key)
         })
     }).then((acc) => {
@@ -40,8 +86,18 @@ function main() {
         const web3Instance=new Web3(new Web3.providers.HttpProvider(web3NodeAddress))
         web3Instance.eth.accounts.wallet.add(acc.key)
         return makeContract(web3Instance, rinkebyDeployedAddress).then((contract) => {
-            console.log("found contract")
-            return contract.methods.badgesOf(acc.address).call({ from: acc.address })
+            return { acc, contract }
+        })
+    }).then(({ acc, contract }) => {
+        return readFunctionCallFromConsole(readlineInterface).then((fCall) => {
+            switch (fCall.function) {
+                case Function.FetchBadges:
+                    return contract.methods.badgesOf(fCall.address).call({ from: acc.address })
+                case Function.Mint:
+                    throw Error('Not yet implemented')
+                default:
+                    throw Error('Non supported function specified')
+            }
         })
     }).then((result) => {
         console.log("finished")

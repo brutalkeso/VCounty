@@ -11,10 +11,10 @@ class Account {
     }
 }
 
-function readStringFromConsole(name: string, minLength: number, readlineInterface: readline.Interface): Promise<string> {
+function readHexFromConsole(name: string, minLength: number, readlineInterface: readline.Interface): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         readlineInterface.question(name+': ', (inputValue) => {
-            if (inputValue.length<minLength) {
+            if (inputValue.length<minLength||inputValue.length<2) {
                 reject('input too short')
             } else if (inputValue.substring(0, 2)!='0x') {
                 reject('address should start with 0x')
@@ -37,4 +37,4 @@ function readNodeAddressFromConsole(readlineInterface: readline.Interface): Prom
     })
 }
 
-export { readStringFromConsole, readNodeAddressFromConsole, Account }
+export { readHexFromConsole, readNodeAddressFromConsole, Account }

@@ -4,7 +4,7 @@ import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
 import { promises } from 'fs'
-import { readStringFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
 
 ///////////////////////////////// WEB3 ///////////////////////////////////////////
 
@@ -72,8 +72,8 @@ function readDataFromConsole(readlineInterface: readline.Interface): Promise<Arr
 
 function readDeployParametersFromConsole(readlineInterface: readline.Interface): Promise<DeployParameters> {
 
-    return readStringFromConsole("Wallet address", 42, readlineInterface).then((address) => {
-        return readStringFromConsole("Wallet key", 62, readlineInterface).then((key) => {
+    return readHexFromConsole("Wallet address", 42, readlineInterface).then((address) => {
+        return readHexFromConsole("Wallet key", 62, readlineInterface).then((key) => {
             return new Account(address, key)
         })
     }).then((acc) => {
