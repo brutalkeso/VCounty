@@ -4,7 +4,7 @@ import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
 import { promises } from 'fs'
-import { readHexFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readLineFromConsole, Account } from "./Shared"
 
 ///////////////////////////////// WEB3 ///////////////////////////////////////////
 
@@ -90,7 +90,7 @@ async function main() {
     const readlineInterface=readline.createInterface({ input, output })
 
     readDeployParametersFromConsole(readlineInterface).then((deployParameters) => {
-        return readNodeAddressFromConsole(readlineInterface).then((web3NodeAddress) => {
+        return readLineFromConsole('Web3 node address', readlineInterface).then((web3NodeAddress) => {
             return { deployParameters, web3NodeAddress }
         })
     }).then(({ deployParameters, web3NodeAddress }) => {

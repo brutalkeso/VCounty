@@ -25,9 +25,9 @@ function readHexFromConsole(name: string, minLength: number, readlineInterface: 
     })
 }
 
-function readNodeAddressFromConsole(readlineInterface: readline.Interface): Promise<string> {
+function readLineFromConsole(name: string, readlineInterface: readline.Interface): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        readlineInterface.question("Web3 node address: ", (inputValue) => {
+        readlineInterface.question(name+': ', (inputValue) => {
             if (inputValue.length>0) {
                 resolve(inputValue)
             } else {
@@ -37,4 +37,4 @@ function readNodeAddressFromConsole(readlineInterface: readline.Interface): Prom
     })
 }
 
-export { readHexFromConsole, readNodeAddressFromConsole, Account }
+export { readHexFromConsole, readLineFromConsole, Account }

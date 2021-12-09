@@ -3,7 +3,7 @@ import { Contract } from "web3-eth-contract";
 import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
-import { readHexFromConsole, readNodeAddressFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readLineFromConsole, Account } from "./Shared"
 import { promises } from 'fs'
 
 //const web3Instance=new Web3(new Web3.providers.HttpProvider("http://localhost:7545"))
@@ -68,7 +68,19 @@ function readFunctionCallFromConsole(readlineInterface: readline.Interface): Pro
 
 enum Function {
     FetchBadges,
+    Employ,
     Mint
+}
+
+function employ(
+    prospectAddress: string,
+    bossAddress: string,
+    contract: Contract,
+    readlineInterface: readline.Interface
+): Promise<any> {
+    return readLineFromConsole('Sheriff name', readlineInterface).then((name) => {
+        return contract.methods.employ(name, prospectAddress).send({ from: bossAddress })
+    })
 }
 
 function main() {
@@ -79,7 +91,7 @@ function main() {
             return new Account(address, key)
         })
     }).then((acc) => {
-        return readNodeAddressFromConsole(readlineInterface).then((web3NodeAddress: string) => {
+        return readLineFromConsole('Web3 node address', readlineInterface).then((web3NodeAddress: string) => {
             return { acc, web3NodeAddress }
         })
     }).then(({ acc, web3NodeAddress }) => {
@@ -93,8 +105,10 @@ function main() {
             switch (fCall.function) {
                 case Function.FetchBadges:
                     return contract.methods.badgesOf(fCall.address).call({ from: acc.address })
+                case Function.Employ:
+                    return employ(fCall.address, acc.address, contract, readlineInterface)
                 case Function.Mint:
-                    throw Error('Not yet implemented')
+                    return contract.methods.mintBadgeFor(fCall.address).send({ from: acc.address })
                 default:
                     throw Error('Non supported function specified')
             }
