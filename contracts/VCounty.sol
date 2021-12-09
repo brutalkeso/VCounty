@@ -95,8 +95,17 @@ contract VCounty {
         delete sheriffs[newBoss];
     }
 
-    function badgesOf(address owner) public view returns (uint256[] memory) {
+    function badgeIdsOf(address owner) public view returns (uint256[] memory) {
         return wallets[owner];
+    }
+
+    function badgesOf(address owner) public view returns (Badge[] memory) {
+        uint256[] memory badgeIds = wallets[owner];
+        Badge[] memory fetchedBadges = new Badge[](badgeIds.length);
+        for (uint256 i = 0; i < badgeIds.length; i++) {
+            fetchedBadges[i] = badges[badgeIds[i]];
+        }
+        return fetchedBadges;
     }
 
     function indexOfBadge(uint256 id, address owner)

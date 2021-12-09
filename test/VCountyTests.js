@@ -9,22 +9,21 @@ contract('VCounty', (accounts) => {
     beforeEach(async () => {
         vCounty = await VCounty.new(badges, { from: accounts[0] })
     })
-
     it("should succeed at employing new sheriff", async () => {
         await truffleAssert.passes(vCounty.employ("", accounts[1], { from: accounts[0] }))
     })
 
     it("should return succeed at fetching badges even if address is not a sheriff", async () => {
-        truffleAssert.passes(vCounty.badgesOf(accounts[1]));
+        truffleAssert.passes(vCounty.badgeIdsOf(accounts[1]));
     })
 
     it("should pass when caller is deployer", async () => {
-        truffleAssert.passes(vCounty.badgesOf(accounts[0]));
+        truffleAssert.passes(vCounty.badgeIdsOf(accounts[0]));
     })
 
     it("new sheriff should start without badges", async () => {
         await vCounty.employ("", accounts[1], { from: accounts[0] });
-        const ids = await vCounty.badgesOf(accounts[1]);
+        const ids = await vCounty.badgeIdsOf(accounts[1]);
         assert(ids.length == 0);
     })
 
@@ -36,7 +35,7 @@ contract('VCounty', (accounts) => {
     it("boss should be able to mint", async () => {
         await vCounty.employ("", accounts[1], { from: accounts[0] });
         await vCounty.mintBadgeFor(accounts[1], { from: accounts[0] });
-        const ids = await vCounty.badgesOf(accounts[1]);
+        const ids = await vCounty.badgeIdsOf(accounts[1]);
         assert(ids.length == 1);
     })
 
@@ -47,7 +46,7 @@ contract('VCounty', (accounts) => {
     it("should mint one of the badges", async () => {
         await vCounty.employ("", accounts[1], { from: accounts[0] });
         await vCounty.mintBadgeFor(accounts[1], { gasPrice: 0, from: accounts[0] });
-        const ids = await vCounty.badgesOf(accounts[1]);
+        const ids = await vCounty.badgeIdsOf(accounts[1]);
         const badge = await vCounty.badge(ids[0]);
         assert(badges.includes(badge.value));
     })
@@ -58,6 +57,41 @@ contract('VCounty', (accounts) => {
             await vCounty.mintBadgeFor(accounts[1], { gasPrice: 0, from: accounts[0] });
         }
         await truffleAssert.fails(vCounty.mintBadgeFor(accounts[1], { from: accounts[0] }), "Out of badges, new sheriffs can only trade for them");
+    })
+
+    it("should return empty badges array for non sheriff", async () => {
+        const fetchedBadges = await vCounty.badgesOf(accounts[1])
+        assert(fetchedBadges.length == 0);
+    })
+
+    it("should return empty badges array for new sheriff", async () => {
+        await vCounty.employ("", accounts[1], { from: accounts[0] });
+        const fetchedBadges = await vCounty.badgesOf(accounts[1]);
+        assert(fetchedBadges.length == 0);
+    })
+
+    it("should return badges array of length one for sheriff with one minted badge", async () => {
+        await vCounty.employ("", accounts[1], { from: accounts[0] });
+        await vCounty.mintBadgeFor(accounts[1], { from: accounts[0] });
+        const fetchedBadges = await vCounty.badgesOf(accounts[1]);
+        assert(fetchedBadges.length == 1);
+    })
+    it("should return badges array with correct element after minting", async () => {
+        await vCounty.employ("", accounts[1], { from: accounts[0] });
+        await vCounty.mintBadgeFor(accounts[1], { from: accounts[0] });
+        const fetchedBadges = await vCounty.badgesOf(accounts[1]);
+        assert(badges.includes(fetchedBadges[0].value));
+    })
+
+    it("should return all correct values from badgesOf, after multiple mintings", async () => {
+        await vCounty.employ("", accounts[1], { from: accounts[0] });
+        for (i = 0; i < 3; i++) {
+            await vCounty.mintBadgeFor(accounts[1], { gasPrice: 0, from: accounts[0] });
+        }
+        const fetchedBadges = await vCounty.badgesOf(accounts[1]);
+        for (i = 0; i < 3; i++) {
+            assert(badges.includes(fetchedBadges[i].value));
+        }
     })
 
     it("should not allow badge trade of non minted nft id", async () => {
@@ -158,7 +192,7 @@ contract('VCounty', (accounts) => {
             accounts[2],
             { gasPrice: 0, from: accounts[1] }
         );
-        const ids = await vCounty.badgesOf(accounts[1]);
+        const ids = await vCounty.badgeIdsOf(accounts[1]);
         assert(ids.length == 0);
     })
 
@@ -173,8 +207,7 @@ contract('VCounty', (accounts) => {
             accounts[2],
             { gasPrice: 0, from: accounts[1] }
         );
-        const ids = await vCounty.badgesOf(accounts[2]);
+        const ids = await vCounty.badgeIdsOf(accounts[2]);
         assert(ids.length == 1);
     })
-
 })
