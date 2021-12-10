@@ -17,7 +17,7 @@ function readHexFromConsole(name: string, minLength: number, readlineInterface: 
             if (inputValue.length<minLength||inputValue.length<2) {
                 reject('input too short')
             } else if (inputValue.substring(0, 2)!='0x') {
-                reject('address should start with 0x')
+                reject('hex should start with 0x')
             } else {
                 resolve(inputValue)
             }
