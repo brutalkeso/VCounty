@@ -1,4 +1,5 @@
 import * as readline from 'readline'
+import Web3 from 'web3';
 
 class Account {
     address: string
@@ -24,6 +25,15 @@ function readHexFromConsole(name: string, minLength: number, readlineInterface: 
     })
 }
 
+function getGasPrice(web3Node: string) {
+    const web3Instance=new Web3(new Web3.providers.HttpProvider(web3Node))
+    web3Instance.eth.getGasPrice().then((p) => {
+        console.log(p)
+    }).catch((e) => {
+        console.log(e)
+    })
+}
+
 function readLineFromConsole(name: string, readlineInterface: readline.Interface): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         readlineInterface.question(name+': ', (inputValue) => {
@@ -36,4 +46,4 @@ function readLineFromConsole(name: string, readlineInterface: readline.Interface
     })
 }
 
-export { readHexFromConsole, readLineFromConsole, Account }
+export { readHexFromConsole, readLineFromConsole, getGasPrice, Account }

@@ -4,7 +4,7 @@ import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
 import { promises } from 'fs'
-import { readHexFromConsole, readLineFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readLineFromConsole, getGasPrice, Account } from "./Shared"
 
 ///////////////////////////////// WEB3 ///////////////////////////////////////////
 
@@ -37,8 +37,8 @@ async function deployContract(
         return deployReq
             .send({
                 from: deployParameters.acc.address,
-                gas: 4000000,
-                gasPrice: '1000000000'
+                gas: 6000000,
+                gasPrice: '30000000000'
             })
             .on('receipt', () => console.log('Contract deployed'))
             .then((contract: Contract) => new DeployedContract(contract, deployParameters.acc.address))

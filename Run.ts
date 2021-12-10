@@ -3,7 +3,7 @@ import { Contract } from "web3-eth-contract";
 import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
 JSON=require('JSON')
-import { readHexFromConsole, readLineFromConsole, Account } from "./Shared"
+import { readHexFromConsole, readLineFromConsole, getGasPrice, Account } from "./Shared"
 import { promises } from 'fs'
 
 //////////////////////////////// WEB3 ///////////////////////////////////////////////
@@ -14,7 +14,7 @@ function makeContract(web3Instance: Web3, contractAddress: string): Promise<Cont
         const contract: Contract=new web3Instance.eth.Contract(
             abiJson,
             contractAddress,
-            { gas: 1000000, gasPrice: '1000000000' }
+            { gas: 1000000, gasPrice: '30000000000' }
         )
         return contract
     })
@@ -81,7 +81,7 @@ function employ(
 }
 
 function main() {
-    const rinkebyDeployedAddress='0x92c659C770B816De78722519Bd1D254d28Ca4128';
+    const polygonMainNetAddress='0x0FF4B6a61865AC19cbB627673C326141bd74a6d1';
     const readlineInterface=readline.createInterface({ input, output })
     readHexFromConsole("Wallet address", 42, readlineInterface).then((address) => {
         return readHexFromConsole("Wallet key", 62, readlineInterface).then((key) => {
@@ -94,7 +94,7 @@ function main() {
     }).then(({ acc, web3NodeAddress }) => {
         const web3Instance=new Web3(new Web3.providers.HttpProvider(web3NodeAddress))
         web3Instance.eth.accounts.wallet.add(acc.key)
-        return makeContract(web3Instance, rinkebyDeployedAddress).then((contract) => {
+        return makeContract(web3Instance, polygonMainNetAddress).then((contract) => {
             return { acc, contract }
         })
     }).then(({ acc, contract }) => {
